@@ -10,6 +10,7 @@ from project.apis.crud import (
     get_user,
     list_friends,
     send_request_validation,
+    user_distance,
 )
 from project.utils.db import driver
 from project.utils.exceptions import (
@@ -100,3 +101,20 @@ def unfriend_user_handler(user1: str, user2: str) -> BasicResponse:
             return responseObject
         else:
             raise BAD_REQUEST_EXCEPTION
+
+
+def distance_user_handler(user1: str, user2: str) -> BasicResponse:
+    if user1 == user2:
+        raise BAD_REQUEST_EXCEPTION
+    with db_driver.session() as sess:
+        _: User = get_user(User, user2, sess)
+        distance: int = user_distance(user1, user2, sess)
+        if distance > 0:
+            responseObject = {
+                "message": f"The connection is {distance} {'steps' if distance > 1 else 'step'} away."
+            }
+
+            return responseObject
+        else:
+            responseObject = {"message": f"No connection with user {user2}"}
+            return responseObject

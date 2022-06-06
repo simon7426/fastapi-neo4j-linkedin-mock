@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 neo4j-data
+neo4j-plugins
 __pycache__/
 *.py[cod]
 *$py.class

@@ -5,6 +5,7 @@ from fastapi import Depends
 from project.apis.user.handlers import (
     accept_requests_handler,
     current_user_handler,
+    distance_user_handler,
     get_requests_handler,
     get_user_info_handler,
     list_friends_handler,
@@ -59,3 +60,9 @@ async def unfriend_user(
     username: str, owner: dict[str, Any] = Depends(validate_token)
 ) -> BasicResponse:
     return unfriend_user_handler(owner["sub"], username)
+
+
+async def distance_user(
+    username: str, owner: dict[str, Any] = Depends(validate_token)
+) -> BasicResponse:
+    return distance_user_handler(owner["sub"], username)

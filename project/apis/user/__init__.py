@@ -3,6 +3,7 @@ from fastapi import APIRouter, status
 from project.apis.user.views import (
     accept_request,
     current_user,
+    distance_user,
     get_friend_requests,
     get_user_info,
     list_friends,
@@ -55,6 +56,12 @@ router.add_api_route(
 router.add_api_route(
     "/unfriend/{username}",
     endpoint=unfriend_user,
+    status_code=status.HTTP_200_OK,
+    methods=["GET"],
+)
+router.add_api_route(
+    "/distance/{username}",
+    endpoint=distance_user,
     status_code=status.HTTP_200_OK,
     methods=["GET"],
 )

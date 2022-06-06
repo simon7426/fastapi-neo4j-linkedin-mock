@@ -149,3 +149,18 @@ def delete_friend(user1: str, user2: str, sess: Any) -> bool:
         return True
     else:
         return False
+
+
+def user_distance(user1: str, user2: str, sess: Any) -> int:
+    query = (
+        f"MATCH (a:User) where a.username='{user1}'\n"
+        f"MATCH (b:User) where b.username='{user2}'\n"
+        "CALL apoc.algo.dijkstra(a,b,'Friends','distance',1)\n"
+        "YIELD weight as weight RETURN weight;\n"
+    )
+    response = sess.run(query=query)
+    record = response.data("weight")
+    if record:
+        return int(record[0].get("weight"))
+    else:
+        return -1

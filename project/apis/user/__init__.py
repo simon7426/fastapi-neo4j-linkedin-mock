@@ -8,6 +8,7 @@ from project.apis.user.views import (
     list_friends,
     reject_request,
     send_friend_request,
+    unfriend_user,
 )
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -48,6 +49,12 @@ router.add_api_route(
 router.add_api_route(
     "/friends",
     endpoint=list_friends,
+    status_code=status.HTTP_200_OK,
+    methods=["GET"],
+)
+router.add_api_route(
+    "/unfriend/{username}",
+    endpoint=unfriend_user,
     status_code=status.HTTP_200_OK,
     methods=["GET"],
 )

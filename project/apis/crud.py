@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from typing import Any, List, Type
 
@@ -6,8 +5,6 @@ from pydantic import BaseModel
 
 from project.utils.exceptions import BAD_REQUEST_EXCEPTION, UserNotExist
 from project.utils.schema import RelationShipSchema, User
-
-log = logging.getLogger("uvicorn")
 
 
 def get_user(cls: Type[BaseModel], username: str, sess: Any) -> Type[BaseModel]:
@@ -56,7 +53,6 @@ def delete_follow(user1: str, user2: str, sess: Any) -> bool:
     )
     response = sess.run(query=query)
     summary = response.consume()
-    log.info(summary.counters.relationships_deleted)
     if summary.counters.relationships_deleted:
         return True
     else:
@@ -92,11 +88,11 @@ def send_request_validation(user1: str, user2: str, sess: Any) -> bool:
         return False
 
 
-def already_friend_validation(user1: str, user2: str, sess: Any) -> bool:
+def friend_validation(user1: str, user2: str, sess: Any) -> bool:
     query = (
         f"MATCH (a:User) WHERE a.username = '{user1}'\n"
         f"MATCH (b:User) WHERE b.username = '{user2}'\n"
-        "MATCH (a:User)-[relationship:Friends]->(b)\n"
+        "MATCH (a:User)-[relationship:Friends]-(b)\n"
         "RETURN a\n"
     )
     response = sess.run(query=query)
@@ -138,3 +134,18 @@ def list_friends(username: str, sess: Any) -> List[User] | None:
         return [User(**val.get("b")) for val in record]
     else:
         return None
+
+
+def delete_friend(user1: str, user2: str, sess: Any) -> bool:
+    query = (
+        f"MATCH (a:User) WHERE a.username = '{user1}'\n"
+        f"MATCH (b:User) WHERE b.username = '{user2}'\n"
+        "MATCH (b)-[relationship:Friends]-(a)\n"
+        "DELETE relationship\n"
+    )
+    response = sess.run(query=query)
+    summary = response.consume()
+    if summary.counters.relationships_deleted:
+        return True
+    else:
+        return False

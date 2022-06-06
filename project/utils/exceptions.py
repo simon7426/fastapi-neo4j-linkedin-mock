@@ -16,27 +16,32 @@ BAD_REQUEST_EXCEPTION = HTTPException(
 
 
 class UserNotExist(Exception):
-    def __init__(self, username: str):
+    def __init__(self, username: str) -> None:
         self.username = username
 
 
 class UserAlreadyExist(Exception):
-    def __init__(self, username: str):
+    def __init__(self, username: str) -> None:
         self.username = username
 
 
 class AlreadySentRequest(Exception):
-    def __init__(self, username: str):
+    def __init__(self, username: str) -> None:
         self.username = username
 
 
 class AlreadyFriend(Exception):
-    def __init__(self, username: str):
+    def __init__(self, username: str) -> None:
         self.username = username
 
 
 class NoRequestSent(Exception):
-    def __init__(self, username: str):
+    def __init__(self, username: str) -> None:
+        self.username = username
+
+
+class NotFriend(Exception):
+    def __init__(self, username: str) -> None:
         self.username = username
 
 
@@ -76,4 +81,11 @@ async def no_request_sent_exception_handler(request: Request, exc: AlreadyFriend
         content={
             "detatil": f"User {exc.username} do not have any pending requests with you."
         },
+    )
+
+
+async def not_friend_exception_handler(request: Request, exc: NotFriend):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": f"User {exc.username} is not a friend."},
     )

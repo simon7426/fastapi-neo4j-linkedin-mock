@@ -6,10 +6,12 @@ from project.apis import alive, router
 from project.utils.exceptions import (
     AlreadyFriend,
     AlreadySentRequest,
+    NotFriend,
     UserAlreadyExist,
     UserNotExist,
     already_friend_exception_handler,
     already_sent_request_exception_handler,
+    not_friend_exception_handler,
     user_already_exists_exception_handler,
     user_not_exists_exception_handler,
 )
@@ -31,6 +33,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(
         AlreadySentRequest, already_sent_request_exception_handler
     )
+    app.add_exception_handler(NotFriend, not_friend_exception_handler)
 
     return app
 

@@ -10,6 +10,7 @@ from project.apis.user.handlers import (
     list_friends_handler,
     reject_request_handler,
     send_friend_request_handler,
+    unfriend_user_handler,
 )
 from project.utils.exceptions import BAD_REQUEST_EXCEPTION
 from project.utils.schema import BasicResponse, RelationShipSchema, User
@@ -52,3 +53,9 @@ async def reject_request(
 
 async def list_friends(owner: dict[str, Any] = Depends(validate_token)) -> List[User]:
     return list_friends_handler(owner["sub"])
+
+
+async def unfriend_user(
+    username: str, owner: dict[str, Any] = Depends(validate_token)
+) -> BasicResponse:
+    return unfriend_user_handler(owner["sub"], username)

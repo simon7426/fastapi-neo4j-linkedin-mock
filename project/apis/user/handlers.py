@@ -2,9 +2,10 @@ from typing import List
 
 from project.apis.crud import (
     accept_friend_request,
-    already_friend_validation,
     delete_follow,
+    delete_friend,
     follow_user,
+    friend_validation,
     get_requests,
     get_user,
     list_friends,
@@ -16,6 +17,7 @@ from project.utils.exceptions import (
     AlreadyFriend,
     AlreadySentRequest,
     NoRequestSent,
+    NotFriend,
 )
 from project.utils.schema import BasicResponse, RelationShipSchema, User
 
@@ -39,7 +41,7 @@ def send_friend_request_handler(user1: str, user2: str) -> RelationShipSchema:
         _: User = get_user(User, user2, sess)
         if send_request_validation(user1, user2, sess):
             raise AlreadySentRequest(user2)
-        if already_friend_validation(user1, user2, sess):
+        if friend_validation(user1, user2, sess):
             raise AlreadyFriend(user2)
 
         relationshipData: RelationShipSchema = follow_user(
@@ -61,7 +63,7 @@ def accept_requests_handler(user1: str, user2: str) -> RelationShipSchema:
         _: User = get_user(User, user2, sess)
         if not send_request_validation(user2, user1, sess):
             raise NoRequestSent(user2)
-        if already_friend_validation(user1, user2, sess):
+        if friend_validation(user1, user2, sess):
             raise AlreadyFriend(user2)
         relationshipData: RelationShipSchema = accept_friend_request(
             user1=user1, user2=user2, sess=sess
@@ -74,7 +76,7 @@ def reject_request_handler(user1: str, user2: str) -> BasicResponse:
         _: User = get_user(User, user2, sess)
         if not send_request_validation(user2, user1, sess):
             raise NoRequestSent(user2)
-        if already_friend_validation(user1, user2, sess):
+        if friend_validation(user1, user2, sess):
             raise AlreadyFriend(user2)
         if delete_follow(user1, user2, sess):
             responseObject = {"message": "Request deleted successfully."}
@@ -86,3 +88,15 @@ def reject_request_handler(user1: str, user2: str) -> BasicResponse:
 def list_friends_handler(user: str) -> List[User]:
     with db_driver.session() as sess:
         return list_friends(user, sess)
+
+
+def unfriend_user_handler(user1: str, user2: str) -> BasicResponse:
+    with db_driver.session() as sess:
+        _: User = get_user(User, user2, sess)
+        if not friend_validation(user1, user2, sess):
+            raise NotFriend(user2)
+        if delete_friend(user1, user2, sess):
+            responseObject = {"message": f"Removed user {user2} as friend."}
+            return responseObject
+        else:
+            raise BAD_REQUEST_EXCEPTION

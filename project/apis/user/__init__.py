@@ -5,6 +5,8 @@ from project.apis.user.views import (
     current_user,
     get_friend_requests,
     get_user_info,
+    list_friends,
+    reject_request,
     send_friend_request,
 )
 
@@ -34,6 +36,18 @@ router.add_api_route(
 router.add_api_route(
     "/requests",
     endpoint=get_friend_requests,
+    status_code=status.HTTP_200_OK,
+    methods=["GET"],
+)
+router.add_api_route(
+    "/reject/{username}",
+    endpoint=reject_request,
+    status_code=status.HTTP_200_OK,
+    methods=["GET"],
+)
+router.add_api_route(
+    "/friends",
+    endpoint=list_friends,
     status_code=status.HTTP_200_OK,
     methods=["GET"],
 )

@@ -39,3 +39,7 @@ class LoginPayloadSchema(BaseModel):
 
 class RelationShipSchema(BaseModel):
     created_at: datetime
+
+
+class BasicResponse(BaseModel):
+    message: str
